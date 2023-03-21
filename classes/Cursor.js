@@ -1,11 +1,11 @@
 import Vector2 from "./Vector2";
 import EventSystem from "./EventSystem";
 import Collision from "./Collision";
+import Settings from "./Settings";
 
 export default class Cursor{
     static disableOffset = false;
     static get = () => { return null; };
-    static toGrid = (pos) => { var size = Settings.gridSizeS; return new Vector2(Math.round(pos.x / size) * size, Math.round(pos.y / size) * size); };
     
     events = null;
     position = null;
@@ -32,14 +32,14 @@ export default class Cursor{
 
     constructor() {
         Cursor.get = () => { return this; };
-        this.events = new EventSystem(['click', 'dragStart', 'dragMove', 'dragEnd', 'scroll']);
+        this.events = new EventSystem(['click', 'dragStart', 'dragMove', 'dragEnd', 'scroll', 'move']);
         this.position = Vector2.zero();
         this.#lastPos = Vector2.zero();
         this.#diff = Vector2.zero();
         this.resetOffset();
 
         //Track mouse position
-        Settings.getCanvas().elt.addEventListener('mousemove', (e) => { this.position = new Vector2(e.clientX, e.clientY); });
+        Settings.getCanvas().elt.addEventListener('mousemove', (e) => { this.position = new Vector2(e.clientX, e.clientY); this.events.invoke('move', e); });
         
         //Mouse based
         Settings.getCanvas().elt.addEventListener('mousemove', (event) => { this.#event(event, 'mousemove'); });
@@ -127,7 +127,7 @@ export default class Cursor{
     }
 
     resetOffset(){
-        this.offset = new Vector2(-Settings.mapSizeX / 8, -Settings.mapSizeY / 8);
+        this.offset = new Vector2(0, 0);
     }
 
     #event(e, type) {
@@ -147,8 +147,8 @@ export default class Cursor{
                     this.offset.add(this.#diff);
 
                     this.#checkBounds();
-                    this.#lastPos = Vector2.copy(newPos);
                 }
+                this.#lastPos = Vector2.copy(newPos);
                 this.events.invoke('dragMove', e);
             }
         }

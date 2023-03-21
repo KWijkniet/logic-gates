@@ -1,32 +1,55 @@
 import Vector2 from "./Vector2";
 
 export default class Wire {
-    posA = new Vector2(0, 0);
-    posB = new Vector2(0, 0);
+    dots = [];
     voltage = 0;
+    voltageIndex = -1;
 
-    constructor(x1, y1, x2, y2){
-        this.posA = new Vector2(x1, y1);
-        this.posB = new Vector2(x2, y2);
+    // #delayMax = 10;
+    // #delay = 0;
 
-        window.events.subscribe('draw', () => {this.draw();});
+    constructor(dots){
+        this.dots = dots.reverse();
+
+        window.events.subscribe('draw', () => {
+            this.draw();
+            // this.#delay++;
+            // if(this.#delay >= this.#delayMax){
+            //     this.#delay = 0;
+            //     this.drawDelayed();
+            // }
+        });
     }
     
     draw(){
         push();
-        
-        // console.log(this.posA);
-        strokeWeight(5);
-        stroke(0);
-        line(this.posA.x, this.posA.y, this.posB.x, this.posB.y);
+        strokeWeight(10);
+        for (let i = 0; i < this.dots.length; i++) {
+            const dot = this.dots[i];
+            const dotPrev = this.dots[i - 1 >= 0 ? i - 1 : 0];
+            
+            if(this.dots.length - i < this.voltageIndex){
+                stroke(255, 0, 0);
+            }
+            else{
+                stroke(0);
+            }
+            line(dotPrev.x, dotPrev.y, dot.x, dot.y);
+        }
+        pop();
 
         if(this.voltage >= 5){
-            strokeWeight(8);
-            stroke(255, 0, 0);
-            line(this.posA.x, this.posA.y, this.posB.x, this.posB.y);
+            if(this.voltageIndex < this.dots.length){
+                this.voltageIndex++;
+            }
         }
-
-        pop();
-        this.voltage += 0.0001;
+        else{
+            this.voltageIndex = -1;
+            this.voltage += 5;
+        }
     }
+
+    // drawDelayed(){
+        
+    // }
 }
