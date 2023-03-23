@@ -5,11 +5,46 @@
         <link rel="icon" type="image/svg+xml" href="" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Logic Gates</title>
+        <!-- <script src="https://kit.fontawesome.com/f9577681d3.js" crossorigin="anonymous"></script> -->
     </head>
     <body>
-        
+        <!-- HEADER -->
+        <div class="navbar" id="horizontal-scroll">
+            <template id="navbar-item">
+                <div class="navbar-item active">
+                    test
+                    <button class="close-button">x</button>
+                </div>
+            </template>
+            <button class="navbar-item-new">x</button>
+        </div>
 
-        <script type="module" src="/public/p5.min.js"></script>
+        <!-- ACTION MENU -->
+        <div class="action-menu" id="action-menu" style="display: none;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="action-menu-search" value="">
+
+            <div class="action-menu-container" id="action-menu-container">
+
+                <template id="action-menu-item">
+                    <div class="action-menu-item">
+                        <i class="fa-solid"></i>
+                        <p class="title"></p>
+                        <p class="subtitle"></p>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+
+        <script type="module" src="/p5.min.js"></script>
         <script type="module" src="/main.js"></script>
+        <script>
+            var item = document.getElementById("horizontal-scroll");
+            item.addEventListener("wheel", function (e) {
+                if (e.deltaY > 0) item.scrollLeft += 20;
+                else item.scrollLeft -= 20;
+            });
+        </script>
     </body>
 </html>

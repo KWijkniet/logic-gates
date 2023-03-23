@@ -17,6 +17,7 @@ export default class Cursor{
     #mousemoved = false;
     #lastPos = null;
     #diff = null;
+    #lateClick = null;
 
     local = () => {
         var rect = Settings.getCanvas().elt.getBoundingClientRect();
@@ -32,7 +33,7 @@ export default class Cursor{
 
     constructor() {
         Cursor.get = () => { return this; };
-        this.events = new EventSystem(['click', 'dragStart', 'dragMove', 'dragEnd', 'scroll', 'move']);
+        this.events = new EventSystem(['click', 'lateClick', 'dragStart', 'dragMove', 'dragEnd', 'scroll', 'move']);
         this.position = Vector2.zero();
         this.#lastPos = Vector2.zero();
         this.#diff = Vector2.zero();
@@ -71,9 +72,15 @@ export default class Cursor{
 
             this.#checkBounds();
         });
+
+        window.events.subscribe('draw', ()=>{this.update();});
     }
 
     update() {
+        if(this.#lateClick != null){
+            this.events.invoke('lateClick', this.#lateClick);
+            this.#lateClick = null;
+        }
         // var pos = cursor.local().remove(cursor.offset);
         // pos.x /= Settings.zoom;
         // pos.y /= Settings.zoom;
@@ -132,6 +139,11 @@ export default class Cursor{
 
     #event(e, type) {
         if (this.isDisabled) { return; }
+        if(this.#lateClick != null){
+            this.events.invoke('lateClick', this.#lateClick);
+            this.#lateClick = null;
+        }
+
         var newPos = this.local();
         if(type == 'mousemove'){
             if (this.#mousedown && !this.#mousemoved){
@@ -162,6 +174,7 @@ export default class Cursor{
             }
             else{
                 this.events.invoke('click', e);
+                this.#lateClick = e;
             }
 
             this.#mousemoved = false;

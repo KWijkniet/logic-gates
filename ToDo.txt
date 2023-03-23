@@ -1,1 +1,2 @@
-DrawWireTool.js:
+- Wire: Speed up fade.
+- Chips
